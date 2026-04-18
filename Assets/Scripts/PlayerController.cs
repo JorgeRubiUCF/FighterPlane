@@ -23,8 +23,15 @@ public class PlayerController : MonoBehaviour
 
     public GameObject bulletPrefab;
 
+    public GameObject thruster;
+    public GameObject shield;
+    public int weaponType;
+    public bool shieldActive;
+
     void Start()
     {
+        shieldActive = false;
+        weaponType = 1;
         playerSpeed = 6f;
         lives = 3;
         //this is setting a reference to the game manager, allowing us to use it
@@ -45,12 +52,95 @@ public class PlayerController : MonoBehaviour
 
     public void LoseALife()
     {
-        lives--;
+        if (!shieldActive)
+        {
+            lives--;
+        }
+        if (shieldActive)
+        {
+            shield.SetActive(false);
+            shieldActive = false;
+
+        }
         gameManager.ChangeLivesText(lives);
         if(lives == 0)
         {
             Instantiate(explosionPrefab, transform.position, Quaternion.identity);
+            gameManager.GameOver();
             Destroy(this.gameObject);
+        }
+    }
+
+    //this is basically cookie cutter for all the other powerups
+
+    IEnumerator ShieldPowerDown()
+    {
+        yield return new WaitForSeconds(5);
+        shield.SetActive(false);
+        shieldActive = false;
+        gameManager.PlaySound(2);
+        gameManager.ManagePowerUpText(5);
+    }
+
+    IEnumerator SpeedPowerDown()
+    {
+        yield return new WaitForSeconds(5);
+        playerSpeed = 5f;
+        thruster.SetActive(false);
+        gameManager.PlaySound(2);
+        gameManager.ManagePowerUpText(5);
+    }
+
+    IEnumerator WeaponsPowerDown()
+    {
+        yield return new WaitForSeconds(5);
+        weaponType = 1;
+        gameManager.PlaySound(2);
+        gameManager.ManagePowerUpText(5);
+    }
+
+
+
+    private void OnTriggerEnter2D(Collider2D whatDidIHit)
+    {
+        if(whatDidIHit.tag == "PowerUp")
+        {
+            Destroy(whatDidIHit.gameObject);
+            int whichPowerUp = Random.Range(1, 5);
+            gameManager.PlaySound(1);
+            switch(whichPowerUp)
+            {
+                case 1:
+                    playerSpeed = 10f;
+                    //StartCoroutine
+                    //thruster active
+                    thruster.SetActive(true);
+                    gameManager.ManagePowerUpText(1);
+                    StartCoroutine(SpeedPowerDown());
+                    break;
+                case 2:
+                    //set weapon type 2
+                    weaponType = 2;
+                    //weapon powerdown coroutine
+                    gameManager.ManagePowerUpText(2);
+                    StartCoroutine(WeaponsPowerDown());
+                    break;
+                case 3:
+                    //set weapon type 3
+                    weaponType = 3;
+                    //weapon powerdown coroutine
+                    gameManager.ManagePowerUpText(3);
+                    StartCoroutine(WeaponsPowerDown());
+                    break;
+                case 4:
+                    //set shield active - turn on a bool and game object
+                    //set shield power down coroutine
+                    shield.SetActive(true);
+                    shieldActive = true;
+                    gameManager.ManagePowerUpText(4);
+                    StartCoroutine(ShieldPowerDown());
+                    break;
+            }
         }
     }
 
@@ -59,7 +149,23 @@ public class PlayerController : MonoBehaviour
         //if the player presses the SPACE key, create a projectile
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            Instantiate(bulletPrefab, transform.position + new Vector3(0, 1, 0), Quaternion.identity);
+            //put a switch case here that uses the different weapon type to fire different amounts of bullets
+            //IMPORTANT
+            switch (weaponType)
+            {
+                case 1:
+                    Instantiate(bulletPrefab, transform.position + new Vector3(0, 0.5f, 0), Quaternion.identity);
+                    break;
+                case 2:
+                    Instantiate(bulletPrefab, transform.position + new Vector3(-0.5f, 0.5f, 0), Quaternion.identity);
+                    Instantiate(bulletPrefab, transform.position + new Vector3(0.5f, 0.5f, 0), Quaternion.identity);
+                    break;
+                case 3:
+                    Instantiate(bulletPrefab, transform.position + new Vector3(-0.5f, 0.5f, 0), Quaternion.Euler(0, 0, 45));
+                    Instantiate(bulletPrefab, transform.position + new Vector3(0, 0.5f, 0), Quaternion.identity);
+                    Instantiate(bulletPrefab, transform.position + new Vector3(0.5f, 0.5f, 0), Quaternion.Euler(0, 0, -45));
+                    break;
+            }
         }
     }
 
