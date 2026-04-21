@@ -79,7 +79,7 @@ public class PlayerController : MonoBehaviour
         shield.SetActive(false);
         shieldActive = false;
         gameManager.PlaySound(2);
-        gameManager.ManagePowerUpText(5);
+        gameManager.ManagePowerUpText(7);
     }
 
     IEnumerator SpeedPowerDown()
@@ -88,7 +88,7 @@ public class PlayerController : MonoBehaviour
         playerSpeed = 5f;
         thruster.SetActive(false);
         gameManager.PlaySound(2);
-        gameManager.ManagePowerUpText(5);
+        gameManager.ManagePowerUpText(7);
     }
 
     IEnumerator WeaponsPowerDown()
@@ -96,7 +96,7 @@ public class PlayerController : MonoBehaviour
         yield return new WaitForSeconds(5);
         weaponType = 1;
         gameManager.PlaySound(2);
-        gameManager.ManagePowerUpText(5);
+        gameManager.ManagePowerUpText(7);
     }
 
 
@@ -140,6 +140,27 @@ public class PlayerController : MonoBehaviour
                     gameManager.ManagePowerUpText(4);
                     StartCoroutine(ShieldPowerDown());
                     break;
+            }
+        }
+        if(whatDidIHit.tag == "Coin")
+        {
+            Destroy(whatDidIHit.gameObject);
+            gameManager.AddScore(1);
+            gameManager.PlaySound(3);
+        }
+        if(whatDidIHit.tag == "LifePowerUp")
+        {
+            Destroy(whatDidIHit.gameObject);
+            if (lives < 3)
+            {
+                lives++;
+                gameManager.ChangeLivesText(lives);
+                gameManager.ManagePowerUpText(5);
+            }
+            else
+            {
+                gameManager.ManagePowerUpText(6);
+                gameManager.AddScore(1);
             }
         }
     }

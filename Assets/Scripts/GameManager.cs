@@ -12,8 +12,11 @@ public class GameManager : MonoBehaviour
     public GameObject enemyTwoPrefab;
     public GameObject gameOverMenu;
     public GameObject powerUpPrefab;
+    public GameObject lifePowerUpPrefab;
+    public GameObject coinPrefab;
     public GameObject audioPlayer;
 
+    public AudioClip coinPickup;
     public AudioClip powerUpSound;
     public AudioClip powerDownSound;
 
@@ -41,6 +44,7 @@ public class GameManager : MonoBehaviour
         InvokeRepeating("CreateEnemyTwo", 5, 5);
         AddScore(score);
         StartCoroutine(SpawnPowerUp());
+        StartCoroutine(SpawnCoin());
         powerUpText.text = "No Power ups yet!";
     }
 
@@ -60,6 +64,12 @@ public class GameManager : MonoBehaviour
             case 4:
                 powerUpText.text = "Shield!";
                 break;
+            case 5:
+                powerUpText.text = "Life up!";
+                break;
+            case 6:
+                powerUpText.text = "Max Lives! +1 Score!";
+                break;
             default:
                 powerUpText.text = "No power ups yet!";
                 break;
@@ -76,20 +86,48 @@ public class GameManager : MonoBehaviour
             case 2:
                 audioPlayer.GetComponent<AudioSource>().PlayOneShot(powerDownSound);
                 break;
+            case 3:
+                audioPlayer.GetComponent<AudioSource>().PlayOneShot(coinPickup);
+                break;
         }
+    }
+
+    IEnumerator SpawnCoin()
+    {
+        float spawnTime = Random.Range(3, 5);
+        yield return new WaitForSeconds(spawnTime);
+        CreateCoin();
+        StartCoroutine(SpawnCoin());
     }
 
     IEnumerator SpawnPowerUp()
     {
+        int lifeSpawnChance = Random.Range(1, 11);
         float spawnTime = Random.Range(3, 5);
         yield return new WaitForSeconds(spawnTime);
-        CreatePowerUp();
+        if (lifeSpawnChance == 1)
+        {
+            CreateLifePowerUp();
+        }
+        else
+        {
+            CreatePowerUp();
+        }
         StartCoroutine(SpawnPowerUp());
+    }
+
+    void CreateCoin()
+    {
+        Instantiate(coinPrefab, new Vector3(Random.Range(-horizontalScreenSize * 0.8f, horizontalScreenSize) * 0.8f, Random.Range(-verticalScreenSize * 0.8f, -0.8f), 0), Quaternion.identity);
     }
 
     void CreatePowerUp()
     {
-        Instantiate(powerUpPrefab, new Vector3(Random.Range(-horizontalScreenSize * 0.8f, horizontalScreenSize) * 0.8f, Random.Range(-verticalScreenSize * 0.8f, verticalScreenSize * 0.8f), 0), Quaternion.identity);
+        Instantiate(powerUpPrefab, new Vector3(Random.Range(-horizontalScreenSize * 0.8f, horizontalScreenSize) * 0.8f, Random.Range(-verticalScreenSize * 0.8f, -0.8f), 0), Quaternion.identity);
+    }
+    void CreateLifePowerUp()
+    {
+        Instantiate(lifePowerUpPrefab, new Vector3(Random.Range(-horizontalScreenSize * 0.8f, horizontalScreenSize) * 0.8f, Random.Range(-verticalScreenSize * 0.8f, -0.8f), 0), Quaternion.identity);
     }
 
     void createSky()
@@ -138,6 +176,6 @@ public class GameManager : MonoBehaviour
     //function is setting the text to how many lives there are using the parameter
     public void ChangeLivesText (int currentLives)
     {
-        livesText.text = "lives " + currentLives;
+        livesText.text = "lives: " + currentLives;
     }
 }

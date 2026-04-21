@@ -169,7 +169,10 @@ MonoBehaviour:
   enemyTwoPrefab: {fileID: 1485053494589438310, guid: 8a4754342c4c3aa4f8f7da78c950d413, type: 3}
   gameOverMenu: {fileID: 1888558897}
   powerUpPrefab: {fileID: 1485053494589438310, guid: 4306e8b741fa2ca4d9d9e6f4fa5dbe77, type: 3}
+  lifePowerUpPrefab: {fileID: 1485053494589438310, guid: a1f80a64fc9e75e42b0e506c509cdb81, type: 3}
+  coinPrefab: {fileID: 1485053494589438310, guid: 7c90d58f4e4a9464e880e86d51956e70, type: 3}
   audioPlayer: {fileID: 367281632}
+  coinPickup: {fileID: 8300000, guid: 90b3ebbc618813a44b27143d1d188ff7, type: 3}
   powerUpSound: {fileID: 8300000, guid: 752ca85f206f14146942c3fcafbdd492, type: 3}
   powerDownSound: {fileID: 8300000, guid: 86237706879f3c44db594d2c5cb1f7b3, type: 3}
   horizontalScreenSize: 0
